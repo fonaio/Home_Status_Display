@@ -2,6 +2,14 @@
 #include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>
 #include <SPI.h>
+#include <WiFi.h> 
+#include <PubSubClient.h> 
+
+//MQTT information
+const char* MQTT_HOST = "23c7c9e727f2450999e63ac8d5f5eda0.s1.eu.hivemq.cloud";
+const int   MQTT_PORT = 8883;
+const char* MQTT_USER = "FishFish"
+const char* MQTT_PASS = "BlubBlubBlub00"
 
 //screen constants
 #define TFT_SCLK 8   //D8, GPIO8
@@ -16,7 +24,7 @@
 
 //home, away
 #define DND_BUTTON 7     //D5, GPIO7
-#define STATUS_BUTTON 6  //D4, GPIO6
+#define PRESENCE_BUTTON 6  //D4, GPIO6
 
 #define DND -1
 #define HOME 1
@@ -25,24 +33,40 @@
 Adafruit_GC9A01A tft(TFT_CS, TFT_DC, TFT_COPI, TFT_SCLK, TFT_RST, -1);
 
 //If we are just home, show coral reef fish
-void atHome(){
-  
+void showHome(){
+  tft.fillScreen(0x0000); //Black
+  tft.setTextColor(0xFFFF); //White
+  tft.setTextSize(2);
+  tft.setCursor(60, 110);
+  tft.print("AT HOME");
 }
 
 //If we are home + DND, show jellyfish
-void DND(){
-
-
+void showDND(){
+  tft.fillScreen(0x0000); //Black
+  tft.setTextColor(0xFFFF); //White
+  tft.setTextSize(2);
+  tft.setCursor(60, 110);
+  tft.print("DND ON");
 } 
 
 //If we are away, show fisherman. Clicking the DND button when you are away does not do anything 
-void away(){
+void showAway(){
+  tft.fillScreen(0x0000); //Black
+  tft.setTextColor(0xFFFF); //White
+  tft.setTextSize(2);
+  tft.setCursor(60, 110);
+  tft.print("AWAY");
   
 }
 
 void setup() {
+  client.setServer(MQTT_HOST, MQTT_PORT);
   pinMode(MOTION, INPUT_PULLDOWN);
   pinMode(TFT_BL, OUTPUT);
+
+  pinMode(DND_BUTTON, INPUT_PULLDOWN);
+  pinMode(PRESENCE_BUTTON, INPUT_PULLDOWN);
 
   digitalWrite(TFT_BL, HIGH);
 
@@ -54,10 +78,43 @@ void setup() {
 bool lastMotionState = false;
 bool firstRun = true;
 
-int status = HOME
+bool presence_state = true;
+bool dnd_state = false;
 
 void loop() {
-  bool motionState = digitalRead(MOTION);
+  bool presence = digitalRead(PRESENCE_BUTTON);
+  bool dnd = digitalRead(DND_BUTTON);
+
+//we only want to run this code when either button is pressed
+  if (presence || dnd) { 
+    if (presence) {
+      presence_state = !presence_state;
+      Serial.println("Grey button pressed");
+    }
+    if (dnd) {
+      dnd_state = !dnd_state;
+      Serial.println("Red button pressed");
+    }
+    
+    if (presence_state && !dnd_state) {
+      showHome();
+    }
+    
+    else if (presence_state && dnd_state) {
+      showDND();
+    }
+    
+    else { //Away + DND or Away + !DND
+      showAway();
+    }
+  }
+}
+
+
+
+//motion stuffs
+/*
+bool motionState = digitalRead(MOTION);
   
   if (motionState != lastMotionState || firstRun) {
     if (motionState) {
@@ -79,4 +136,4 @@ void loop() {
 } 
 
   delay(50);
-}
+*/
