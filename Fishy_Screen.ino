@@ -8,8 +8,11 @@
 //MQTT information
 const char* MQTT_HOST = "23c7c9e727f2450999e63ac8d5f5eda0.s1.eu.hivemq.cloud";
 const int   MQTT_PORT = 8883;
-const char* MQTT_USER = "FishFish"
-const char* MQTT_PASS = "BlubBlubBlub00"
+const char* MQTT_USER = "FishFish";
+const char* MQTT_PASS = "BlubBlubBlub00";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 //screen constants
 #define TFT_SCLK 8   //D8, GPIO8
@@ -32,32 +35,33 @@ const char* MQTT_PASS = "BlubBlubBlub00"
 
 Adafruit_GC9A01A tft(TFT_CS, TFT_DC, TFT_COPI, TFT_SCLK, TFT_RST, -1);
 
-//If we are just home, show coral reef fish
-void showHome(){
-  tft.fillScreen(0x0000); //Black
-  tft.setTextColor(0xFFFF); //White
+#define TEXT_X 60
+#define TEXT_Y 110
+#define TEXT_W 160   // adjust to fit your longest string ("DND ON" etc.)
+#define TEXT_H 20
+
+void showHome(){ // only show coral reef fish
+  tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000); // only clear the text area
+  tft.setTextColor(0xFFFF);
   tft.setTextSize(2);
-  tft.setCursor(60, 110);
+  tft.setCursor(TEXT_X, TEXT_Y);
   tft.print("AT HOME");
 }
 
-//If we are home + DND, show jellyfish
-void showDND(){
-  tft.fillScreen(0x0000); //Black
-  tft.setTextColor(0xFFFF); //White
+void showDND(){ //deep sea fish
+  tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000);
+  tft.setTextColor(0xFFFF);
   tft.setTextSize(2);
-  tft.setCursor(60, 110);
+  tft.setCursor(TEXT_X, TEXT_Y);
   tft.print("DND ON");
-} 
+}
 
-//If we are away, show fisherman. Clicking the DND button when you are away does not do anything 
-void showAway(){
-  tft.fillScreen(0x0000); //Black
-  tft.setTextColor(0xFFFF); //White
+void showAway(){ //fisherman
+  tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000);
+  tft.setTextColor(0xFFFF);
   tft.setTextSize(2);
-  tft.setCursor(60, 110);
+  tft.setCursor(TEXT_X, TEXT_Y);
   tft.print("AWAY");
-  
 }
 
 void setup() {
@@ -71,6 +75,7 @@ void setup() {
   digitalWrite(TFT_BL, HIGH);
 
   tft.begin();
+  tft.setSPISpeed(40000000);
   tft.fillScreen(GC9A01A_BLACK);
   Serial.begin(9600);
 }
@@ -81,17 +86,23 @@ bool firstRun = true;
 bool presence_state = true;
 bool dnd_state = false;
 
-void loop() {
-  bool presence = digitalRead(PRESENCE_BUTTON);
-  bool dnd = digitalRead(DND_BUTTON);
+bool lastPresence = false;
+bool lastDnd = false;
 
-//we only want to run this code when either button is pressed
-  if (presence || dnd) { 
-    if (presence) {
+void loop() {
+  bool presenceRead = digitalRead(PRESENCE_BUTTON);
+  bool dndRead = digitalRead(DND_BUTTON);
+
+  bool presencePressed = (presenceRead && !lastPresence);
+  bool dndPressed = (dndRead && !lastDnd);
+
+//we only want to run this code when the button goes from low to high
+  if (presencePressed || dndPressed) { 
+    if (presencePressed) {
       presence_state = !presence_state;
       Serial.println("Grey button pressed");
     }
-    if (dnd) {
+    if (dndPressed && presence_state) {
       dnd_state = !dnd_state;
       Serial.println("Red button pressed");
     }
@@ -108,6 +119,8 @@ void loop() {
       showAway();
     }
   }
+  lastPresence = presenceRead;
+  lastDnd = dndRead;
 }
 
 
