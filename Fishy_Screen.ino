@@ -5,6 +5,7 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h> 
 #include "Coral_Reef.c"
+#include "Deep_Sea.c"
 #include "Nemo_1.c"
 #include "Pink_1.c"
 #include "Grey_1.c"
