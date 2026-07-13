@@ -4,10 +4,10 @@
 #include <SPI.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h> 
-#include <Background.c>
-#include <Grey_1.c>
-#include <Pink_1.c>
-#include <Nemo_1.c>
+#include "Coral_Reef.c"
+#include "Nemo_1.c"
+#include "Pink_1.c"
+#include "Grey_1.c"
 
 //MQTT information
 const char* MQTT_HOST = "23c7c9e727f2450999e63ac8d5f5eda0.s1.eu.hivemq.cloud";
@@ -44,6 +44,41 @@ Adafruit_GC9A01A tft(TFT_CS, TFT_DC, TFT_COPI, TFT_SCLK, TFT_RST, -1);
 #define TEXT_W 160   // adjust to fit your longest string ("DND ON" etc.)
 #define TEXT_H 20
 
+//animation
+typedef const uint8_t (*FishAnimation)[800];
+
+enum BiomeType {
+  CORAL_REEF,
+  DEEP_SEA
+};
+
+FishAnimation coralReefFish[3] = {
+  Grey_1_map, 
+  Pink_1_map, 
+  Nemo_1_map
+};
+
+/*FishAnimation deepSeaFish[3] = {
+  XX_map, 
+  YY_map, 
+  ZZ_map
+};
+*/
+
+FishAnimation chooseRandomFish(BiomeType currentBiome){
+  //Chooses a random fish depending on the 'biome'
+  int randomIndex = random(0, 3);
+
+  if (currentBiome == CORAL_REEF){
+    return coralReefFish[randomIndex]
+  }
+  /*
+  if(currentBiome == DEEP_SEA){
+    return deepSeaFish[randomIndex]
+  }
+  */
+}
+
 void showHome(){ // only show coral reef fish
   /*tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000); // only clear the text area
   tft.setTextColor(0xFFFF);
@@ -51,11 +86,7 @@ void showHome(){ // only show coral reef fish
   tft.setCursor(TEXT_X, TEXT_Y);
   tft.print("AT HOME");*/
   
-  tft.drawRGBBitmap(0, 0, (const uint16_t*)Background_map, 240, 240);
-}
-
-void chooseRandomFish(){
-  
+  tft.drawRGBBitmap(0, 0, (const uint16_t*)Coral_Reef_map, 240, 240);
 }
 void showDND(){ //deep sea fish
   tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000);
