@@ -79,6 +79,24 @@ FishAnimation chooseRandomFish(BiomeType currentBiome){
   */
 }
 
+void animateSwim(FishAnimation fishToDraw){
+  int screenWidth = 240; 
+  int screenHeight = 240;
+  int fishWidth = 20;  
+  int fishHeight = 20;
+
+  int currentY = random(20, screenHeight - fishHeight);
+
+  int currentX = 0
+  int distanceX = 10 //distance between each frame
+  int frameindex = 0
+
+  while (currentX < screenWidth){
+    /* Draw fish, wipe, update next spawn location, draw next frame*/
+
+  }
+}
+
 void showHome(){ // only show coral reef fish
   /*tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000); // only clear the text area
   tft.setTextColor(0xFFFF);
