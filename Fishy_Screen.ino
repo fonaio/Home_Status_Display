@@ -5,10 +5,13 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h> 
 #include "Coral_Reef.c"
-#include "Deep_Sea.c"
 #include "Nemo_1.c"
 #include "Pink_1.c"
 #include "Grey_1.c"
+#include "Deep_Sea.c"
+#include "angler1.c"
+#include "Away1.c"
+
 
 //MQTT information
 const char* MQTT_HOST = "23c7c9e727f2450999e63ac8d5f5eda0.s1.eu.hivemq.cloud";
@@ -56,28 +59,27 @@ enum BiomeType {
 FishAnimation coralReefFish[3] = {
   Grey_1_map, 
   Pink_1_map, 
-  Nemo_1_map
+  nemo_1_map
 };
 
-/*FishAnimation deepSeaFish[3] = {
-  XX_map, 
-  YY_map, 
-  ZZ_map
+FishAnimation deepSeaFish[3] = {
+  angler1_map 
+  //YY_map, 
+  //ZZ_map
 };
-*/
+
 
 FishAnimation chooseRandomFish(BiomeType currentBiome){
   //Chooses a random fish depending on the 'biome'
   int randomIndex = random(0, 3);
 
   if (currentBiome == CORAL_REEF){
-    return coralReefFish[randomIndex]
+    return coralReefFish[randomIndex];
   }
-  /*
+
   if(currentBiome == DEEP_SEA){
-    return deepSeaFish[randomIndex]
+    return deepSeaFish[randomIndex];
   }
-  */
 }
 
 void animateSwim(FishAnimation fishToDraw){
@@ -88,9 +90,9 @@ void animateSwim(FishAnimation fishToDraw){
 
   int currentY = random(20, screenHeight - fishHeight);
 
-  int currentX = 0
-  int distanceX = 10 //distance between each frame
-  int frameindex = 0
+  int currentX = 0;
+  int distanceX = 10; //distance between each frame
+  int frameindex = 0;
 
   while (currentX < screenWidth){
     /* Draw fish, wipe, update next spawn location, draw next frame*/
@@ -108,11 +110,12 @@ void showHome(){ // only show coral reef fish
   tft.drawRGBBitmap(0, 0, (const uint16_t*)Coral_Reef_map, 240, 240);
 }
 void showDND(){ //deep sea fish
-  tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000);
+  /*tft.fillRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, 0x0000);
   tft.setTextColor(0xFFFF);
   tft.setTextSize(2);
   tft.setCursor(TEXT_X, TEXT_Y);
-  tft.print("DND ON");
+  tft.print("DND ON");*/
+  tft.drawRGBBitmap(0, 0, (const uint16_t*)Deep_Sea_map, 240, 240);
 }
 
 void showAway(){ //fisherman
