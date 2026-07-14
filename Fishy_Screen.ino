@@ -4,14 +4,18 @@
 #include <SPI.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h> 
+
 #include "Coral_Reef.c"
 #include "Nemo_1.c"
 #include "Pink_1.c"
 #include "Grey_1.c"
+
 #include "Deep_Sea.c"
 #include "angler1.c"
-#include "Away1.c"
+#include "squid1.c"
+#include "jellyfish1.c"
 
+#include "Away1.c"
 
 //MQTT information
 const char* MQTT_HOST = "23c7c9e727f2450999e63ac8d5f5eda0.s1.eu.hivemq.cloud";
@@ -37,10 +41,6 @@ PubSubClient client(espClient);
 #define DND_BUTTON 7     //D5, GPIO7
 #define PRESENCE_BUTTON 6  //D4, GPIO6
 
-#define DND -1
-#define HOME 1
-#define AWAY 0
-
 Adafruit_GC9A01A tft(TFT_CS, TFT_DC, TFT_COPI, TFT_SCLK, TFT_RST, -1);
 
 #define TEXT_X 60
@@ -64,8 +64,8 @@ FishAnimation coralReefFish[3] = {
 
 FishAnimation deepSeaFish[3] = {
   angler1_map 
-  //YY_map, 
-  //ZZ_map
+  squid1_map, 
+  jellyfish1_map
 };
 
 
