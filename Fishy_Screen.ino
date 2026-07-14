@@ -141,7 +141,7 @@ const int PATCH_Y = 84;
 const int PATCH_W = 20;
 const int PATCH_H = 28;
 
-int animateMusic(int currFrame){
+void animateMusic(){
 //animates the music notes by going to the next frame
   int currTime = millis();
   if (currTime - lastFrameTime > frameInterval){
@@ -217,7 +217,7 @@ void loop() {
   }
 
   if (currentStatus == AWAY) {
-    animateMusic(currFrame);
+    animateMusic();
   }
 
   lastPresence = presenceRead;
